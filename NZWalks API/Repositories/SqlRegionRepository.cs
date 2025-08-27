@@ -15,7 +15,7 @@ namespace NZWalks_API.Repositories
         public async Task<Region> CreateAsync(Region region)
         {
             await _context.Regions.AddAsync(region);
-            await SaveChanges();
+            await SaveChangesAsync();
 
             return region;
         }
@@ -23,7 +23,7 @@ namespace NZWalks_API.Repositories
         public async Task DeleteAsync(Guid id)
         {
             _context.Regions.Remove(new Region { Id = id});
-            await SaveChanges();
+            await SaveChangesAsync();
         }
 
         public async Task<List<Region>> GetAllAsync()
@@ -46,12 +46,12 @@ namespace NZWalks_API.Repositories
             existingRegion.Name = region.Name;
             existingRegion.ImageUrl = region.ImageUrl;
 
-            await SaveChanges();
+            await SaveChangesAsync();
 
             return existingRegion;
         }
 
-        public async Task SaveChanges()
+        private async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
         }
