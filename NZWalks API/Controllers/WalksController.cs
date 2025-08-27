@@ -44,11 +44,11 @@ namespace NZWalks_API.Controllers
             return Ok(_mapper.Map<WalkDto>(walk));
         }
 
-        // GET: https://localhost:portnumber/api/Walks
+        // GET: https://localhost:portnumber/api/Walks?filterOn=Name&filterQuery=Track&sortBy=Name&isAscending=true&pageNumber=1&pageSize=10
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy, [FromQuery] bool? isAscending, int pageNumber = 1, int pageSize = 10)
         {
-            var walks = await _walkRepository.GetAllAsync();
+            var walks = await _walkRepository.GetAllAsync(filterOn, filterQuery, sortBy, isAscending, pageNumber, pageSize);
 
             // Map Domain Model to DTO
             return Ok(_mapper.Map<List<WalkDto>>(walks));
