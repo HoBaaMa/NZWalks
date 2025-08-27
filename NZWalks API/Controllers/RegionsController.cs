@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NZWalks_API.CustomActionFilters;
 using NZWalks_API.Models.Domain;
 using NZWalks_API.Models.DTOs;
 using NZWalks_API.Repositories;
@@ -50,8 +51,13 @@ namespace NZWalks_API.Controllers
 
         // POST: https://localhost:portnumber/api/Regions/
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
             // Check if The Input Data is Null
             if (addRegionRequestDto is null)
             {
@@ -73,8 +79,13 @@ namespace NZWalks_API.Controllers
 
         // PUT: https://localhost:portnumber/api/Regions/{id}
         [HttpPut("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
             // Check if The Input Data is Null
             if (updateRegionRequestDto is null)
             {
