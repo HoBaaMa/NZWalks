@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NZWalks_API.CustomActionFilters;
@@ -12,6 +13,7 @@ namespace NZWalks_API.Controllers
     // https://localhost:portnumber/api/Regions
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class RegionsController : ControllerBase
     {
         private readonly IRegionRepository _regionRepository;
@@ -25,6 +27,7 @@ namespace NZWalks_API.Controllers
 
         // GET: https://localhost:portnumber/api/Regions
         [HttpGet]
+        [Authorize(Roles = "Reader, Writer")]
         public async Task<IActionResult> GetAll()
         {
             // Get Data From Database - Domain Models
@@ -36,6 +39,7 @@ namespace NZWalks_API.Controllers
 
         // GET: https://localhost:portnumber/api/Regions/{id}
         [HttpGet("{id:Guid}")]
+        [Authorize(Roles = "Reader, Writer")]
         public async Task<IActionResult> GetRegionById([FromRoute] Guid id)
         {
             // Get Region Domain Model From Database
@@ -52,6 +56,7 @@ namespace NZWalks_API.Controllers
         // POST: https://localhost:portnumber/api/Regions/
         [HttpPost]
         [ValidateModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             //if (!ModelState.IsValid)
@@ -80,6 +85,7 @@ namespace NZWalks_API.Controllers
         // PUT: https://localhost:portnumber/api/Regions/{id}
         [HttpPut("{id:Guid}")]
         [ValidateModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             //if (!ModelState.IsValid)
@@ -110,6 +116,7 @@ namespace NZWalks_API.Controllers
 
         // DELETE: https://localhost:portnumber/api/Regions/{id}
         [HttpDelete("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete(Guid id)
         {
             try
