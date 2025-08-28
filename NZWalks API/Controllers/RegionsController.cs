@@ -37,7 +37,7 @@ namespace NZWalks_API.Controllers
             // Get Data From Database - Domain Models
             var regions = await _regionRepository.GetAllAsync();
 
-            _logger.LogInformation($"Finished get all region with data: {JsonSerializer.Serialize(regions)}");
+            _logger.LogInformation("Finished get all regions with {RegionCount} regions retrieved", regions.Count());
             // Mapping Domain Models & Return DTOs
             return Ok(_mapper.Map<List<RegionDto>>(regions));
         }
@@ -47,13 +47,17 @@ namespace NZWalks_API.Controllers
         [Authorize(Roles = "Reader, Writer")]
         public async Task<IActionResult> GetRegionById([FromRoute] Guid id)
         {
+            _logger.LogInformation("API call to get region by ID: {RegionId}", id);
+
             // Get Region Domain Model From Database
             var region = await _regionRepository.GetByIdAsync(id);
             if (region is null)
             {
+                _logger.LogWarning("Region not found with ID: {RegionId}", id);
                 return NotFound();
             }
 
+            _logger.LogInformation("Region retrieved successfully with ID: {RegionId}", id);
             // Mapping Domain Model & Return DTO
             return Ok(_mapper.Map<RegionDto>(region));
         }
@@ -64,6 +68,8 @@ namespace NZWalks_API.Controllers
         [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
+            _logger.LogInformation("API call to create a new region with data: {RegionData}", JsonSerializer.Serialize(addRegionRequestDto));
+
             //if (!ModelState.IsValid)
             //{
             //    return BadRequest(ModelState);
@@ -71,6 +77,7 @@ namespace NZWalks_API.Controllers
             // Check if The Input Data is Null
             if (addRegionRequestDto is null)
             {
+                _logger.LogWarning("Create region request failed - null data provided");
                 return BadRequest("Invalid data.");
             }
 
@@ -79,6 +86,8 @@ namespace NZWalks_API.Controllers
 
             // Add & Save Domain Model Entity in The Database
             region = await _regionRepository.CreateAsync(region);
+
+            _logger.LogInformation("Region created successfully with ID: {RegionId}", region.Id);
 
             // Map Domain Model Back to DTO
             var regionDto = _mapper.Map<RegionDto>(region);
@@ -93,6 +102,8 @@ namespace NZWalks_API.Controllers
         [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
+            _logger.LogInformation("API call to update region with ID: {RegionId}, Data: {UpdateData}", id, JsonSerializer.Serialize(updateRegionRequestDto));
+
             //if (!ModelState.IsValid)
             //{
             //    return BadRequest(ModelState);
@@ -100,6 +111,7 @@ namespace NZWalks_API.Controllers
             // Check if The Input Data is Null
             if (updateRegionRequestDto is null)
             {
+                _logger.LogWarning("Update region request failed - null data provided for ID: {RegionId}", id);
                 return BadRequest("Invalid data.");
             }
 
@@ -112,9 +124,11 @@ namespace NZWalks_API.Controllers
             // If The Region is Null; return NotFound() With Status Code 404
             if (region is null)
             {
+                _logger.LogWarning("Region update failed - region not found with ID: {RegionId}", id);
                 return NotFound();
             }
 
+            _logger.LogInformation("Region updated successfully with ID: {RegionId}", id);
             // Return Ok With Status Code 200 & Mapping The Domain Model to DTO & Passing it
             return Ok(_mapper.Map<RegionDto>(region));
         }
@@ -124,17 +138,21 @@ namespace NZWalks_API.Controllers
         [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete(Guid id)
         {
+            _logger.LogInformation("API call to delete region with ID: {RegionId}", id);
+
             try
             {
                 // Delete the region using repository
                 await _regionRepository.DeleteAsync(id);
 
+                _logger.LogInformation("Region deleted successfully with ID: {RegionId}", id);
                 // Return NoContent With Status Code 204
                 return NoContent();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 // Handle case where the entity was already deleted or doesn't exist
+                _logger.LogWarning(ex, "Region deletion failed - concurrency issue for ID: {RegionId}", id);
                 return NotFound();
             }
         }
