@@ -380,7 +380,3 @@ Log levels configured for optimal debugging and monitoring.
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-**Made with ❤️ for the New Zealand hiking community**
